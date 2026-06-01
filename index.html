@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartGRE - B2B SaaS Platform for Logistics & Senders</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* SaaS Switcher Banner */
+    .saas-switcher-banner {
+      background: linear-gradient(90deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+      border: 1px dashed rgba(139, 92, 246, 0.3);
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .switcher-title-area {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .switcher-tag {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--secondary);
+      letter-spacing: 1.5px;
+    }
+    .switcher-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .switcher-select-btn {
+      background: rgba(8, 14, 28, 0.8);
+      border: 1px solid var(--border-color-active);
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      font-family: var(--font-title);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-smooth);
+    }
+    .switcher-select-btn:hover {
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+      transform: translateY(-1px);
+    }
+    .switcher-select-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--secondary);
+      stroke-width: 2.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Decorative Glow Background -->
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+
+  <div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="logo-container">
+               <div class="logo-icon">
+          <img src="SmarGRE-LOGO.jpeg" alt="SmartGRE Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+        </div>
+        <div>
+          <span class="logo-text">SmartGRE SaaS</span>
+          <span class="logo-subtitle" id="sidebar-role-label">MODO MULTI-EMPRESA</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <li class="nav-item active" data-tab="dashboard">
+          <a href="#" class="nav-link">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item" data-tab="scanner">
+          <a href="#" class="nav-link">
+            <svg viewBox="0 0 24 24">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            Escanear Ingesta
+          </a>
+        </li>
+        <li class="nav-item" data-tab="history">
+          <a href="#" class="nav-link">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            Historial GRE
+          </a>
+        </li>
+        <li class="nav-item" data-tab="integrations">
+          <a href="#" class="nav-link">
+            <svg viewBox="0 0 24 24">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            APIs del Ecosistema
+          </a>
+        </li>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-avatar" id="footer-avatar">S2</div>
+        <div class="user-info">
+          <span class="user-name">Jony R.</span>
+          <span class="user-role" id="footer-role">SaaS Product Owner</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      
+      <!-- SaaS Switcher Banner (Crucial for demonstrating to BOTH companies) -->
+      <div class="saas-switcher-banner">
+        <div class="switcher-title-area">
+          <span class="switcher-tag">⚙️ Demo Selector de Módulo B2B SaaS</span>
+          <span class="switcher-desc">Cambia el perfil de la plataforma para ver cómo resuelve las necesidades de una empresa de transportes frente a un laboratorio/remitente.</span>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="switcher-select-btn" onclick="setSaaSRole('carrier')" id="btn-role-carrier">
+            <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            Empresa Transportista (ej. Transagui)
+          </button>
+          <button class="switcher-select-btn" onclick="setSaaSRole('sender')" id="btn-role-sender">
+            <svg viewBox="0 0 24 24"><path d="M4 22V4c0-.5.2-1 .6-1.4C5 2.2 5.5 2 6 2h12c.5 0 1 .2 1.4.6.4.4.6.9.6 1.4v18l-5-4-5 4-5-4-5 4z"></path></svg>
+            Laboratorio / Remitente (ej. Hofarm)
+          </button>
+        </div>
+      </div>
+
+      <!-- HEADER -->
+      <header class="main-header">
+        <div class="page-title">
+          <h1 id="tab-title">Consola de Logística</h1>
+          <p id="tab-subtitle">Monitoreo de guías de remisión electrónicas en tiempo real.</p>
+        </div>
+        <div class="header-actions">
+          <div class="company-badge" id="header-company-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            </svg>
+            <span id="badge-company-name">SMARTGRE B2B PORTAL</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- TAB 1: DASHBOARD -->
+      <section id="tab-content-dashboard" class="tab-content">
+        <!-- METRICS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-title" id="m1-title">Guías Procesadas</span>
+              <span class="metric-value" id="metric-processed">1,248</span>
+              <span class="metric-trend trend-up">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                +14.2% esta semana
+              </span>
+            </div>
+            <div class="metric-icon-wrapper">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-title">Tasa de Automatización</span>
+              <span class="metric-value" id="metric-automation">94.8%</span>
+              <span class="metric-trend trend-up">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                Lectura por IA OCR
+              </span>
+            </div>
+            <div class="metric-icon-wrapper">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-title" id="m3-title">Tiempo Promedio Guardado</span>
+              <span class="metric-value" id="metric-timesaved">4m 12s</span>
+              <span class="metric-trend trend-up">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                Ahorro vs manual
+              </span>
+            </div>
+            <div class="metric-icon-wrapper">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-title">Observaciones SUNAT</span>
+              <span class="metric-value" style="color: var(--warning);">0.04%</span>
+              <span class="metric-trend trend-down">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="3"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+                Validaciones MTC/RUC
+              </span>
+            </div>
+            <div class="metric-icon-wrapper">
+              <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- DASHBOARD GRID -->
+        <div class="dashboard-grid">
+          <!-- Actividad Reciente -->
+          <div class="dashboard-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <h2 id="recent-activity-title">Últimas Guías de Remisión Emitidas</h2>
+              </div>
+            </div>
+            <div class="activity-list" id="dashboard-recent-activity">
+              <!-- Filled by JS depending on active mode -->
+            </div>
+          </div>
+
+          <!-- Ahorro de Costos y Eficiencia -->
+          <div class="dashboard-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <h2 id="chart-section-title">Eficiencia Operativa Diaria</h2>
+              </div>
+            </div>
+            <p id="chart-section-desc" style="font-size: 0.85rem; color: var(--text-muted);"></p>
+            
+            <div class="chart-container">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" id="chart-bar-before" style="height: 85%;">
+                  <div class="chart-val-popup" id="chart-val-before">24m</div>
+                </div>
+                <span class="chart-label" id="chart-label-before">Manual (Antes)</span>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar" id="chart-bar-after" style="height: 12%; background: linear-gradient(to top, rgba(16, 185, 129, 0.2), var(--success));">
+                  <div class="chart-val-popup" id="chart-val-after">2.8m</div>
+                </div>
+                <span class="chart-label" id="chart-label-after">SmartGRE (AI)</span>
+              </div>
+            </div>
+            <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.1); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.4;">
+              <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">✨ Insight del Negocio:</strong>
+              <span id="insight-text">Carga de datos automatizada.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: SCANNER & REGISTRATION -->
+      <section id="tab-content-scanner" class="tab-content" style="display: none;">
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              <h2 id="scanner-panel-title">Ingesta Inteligente de Documentos para Emisión</h2>
+            </div>
+            <span class="status-pill pill-success" id="ocr-engine-pill" style="font-size: 0.75rem;"><span class="blink-dot"></span> Motor IA Activo</span>
+          </div>
+
+          <!-- Drag and Drop Interface -->
+          <div id="drop-zone" class="upload-container">
+            <div class="upload-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <h3 class="upload-title" id="upload-box-title">Arrastra el documento digitalizado</h3>
+            <p class="upload-desc" id="upload-box-desc">Formatos soportados: PDF, PNG, JPG.</p>
+            <input type="file" id="file-uploader" class="file-input" accept=".pdf,.png,.jpg,.jpeg">
+            <button class="btn btn-secondary" style="flex-grow: 0; padding: 0.5rem 1.5rem;" onclick="document.getElementById('file-uploader').click()">Buscar Archivo</button>
+          </div>
+
+          <!-- Quick Samples Selector -->
+          <div class="samples-row" id="samples-panel">
+            <span class="samples-label" id="samples-row-label">¿No tienes un archivo? Prueba con una demo rápida:</span>
+            <div class="samples-list" id="samples-buttons-container">
+              <!-- Filled by JS depending on active mode -->
+            </div>
+          </div>
+
+          <!-- SCAN PLAYGROUND (Shows during and after scanning) -->
+          <div id="scan-playground" class="scan-playground">
+            
+            <div class="scan-progress-area" id="scan-progress-area">
+              <div class="scan-status-text">
+                <span id="scan-status-label" style="color: var(--secondary); font-family: var(--font-title);">Iniciando escaneo cognitivo...</span>
+                <span id="scan-percent">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+              </div>
+            </div>
+
+            <div class="scan-split-screen">
+              <!-- Visual Scan Simulator (Left) -->
+              <div class="document-viewer">
+                <div class="invoice-laser" id="laser-line"></div>
+                
+                <!-- Mock SVG Scanned Invoice Document -->
+                <div class="svg-invoice-container" id="svg-document-preview">
+                  <div style="border-bottom: 2px solid #1e293b; padding-bottom: 0.5rem; margin-bottom: 0.5rem; text-align: center;">
+                    <div style="font-weight: 800; font-size: 0.75rem;" id="doc-sender-header">CABECERA EMISOR</div>
+                    <div style="font-size: 0.4rem;" id="doc-sender-ruc">RUC: -</div>
+                    <div style="font-size: 0.4rem;" id="doc-sender-address">Dirección</div>
+                  </div>
+
+                  <div style="margin-bottom: 0.5rem;">
+                    <div style="font-weight: 700; text-decoration: underline;" id="doc-type-title">TIPO DOCUMENTO</div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>NUMERO:</span>
+                      <strong id="doc-number-preview">-</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>FECHA:</span>
+                      <strong id="doc-date-preview">-</strong>
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom: 0.5rem; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding: 0.25rem 0;">
+                    <div><strong>DESTINATARIO:</strong> <span id="doc-recipient-preview">-</span></div>
+                    <div><strong>RUC:</strong> <span id="doc-recipient-ruc-preview">-</span></div>
+                    <div><strong>PTO. PARTIDA:</strong> <span id="doc-start-preview">-</span></div>
+                    <div><strong>PTO. LLEGADA:</strong> <span id="doc-end-preview">-</span></div>
+                  </div>
+
+                  <table style="width: 100%; border-collapse: collapse; font-size: 0.4rem; text-align: left; margin-bottom: 0.5rem;">
+                    <thead>
+                      <tr style="border-bottom: 1px solid #1e293b;">
+                        <th style="padding-bottom: 0.2rem;">CANT</th>
+                        <th style="padding-bottom: 0.2rem;">DESCRIPCION</th>
+                        <th style="padding-bottom: 0.2rem; text-align: right;">PESO/REF</th>
+                      </tr>
+                    </thead>
+                    <tbody id="doc-items-preview">
+                      <!-- Populated dynamically -->
+                    </tbody>
+                  </table>
+
+                  <div style="border-top: 1px solid #1e293b; padding-top: 0.25rem; font-size: 0.35rem;" id="doc-carrier-footer-preview">
+                    <!-- Changed dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Mapped Output (Right) -->
+              <div class="extracted-form" id="extracted-form-container">
+                <!-- Form fields injected by JS depending on active mode -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SUCCESS EMITTED SCREEN -->
+          <div id="success-screen" class="success-screen">
+            <div class="success-badge">
+              <svg viewBox="0 0 24 24">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <h2 class="success-title" id="success-screen-title">¡Guía Electrónica (GRE) Emitida Exitosamente!</h2>
+            <p class="success-desc" id="success-screen-desc">El documento ha sido firmado digitalmente, reportado a la SUNAT de manera automatizada y vinculado a los sistemas comerciales.</p>
+            
+            <div class="ticket-box">
+              <div class="qr-code-mock">
+                <!-- SVG styled QR Mock -->
+                <svg viewBox="0 0 100 100" width="100%" height="100%">
+                  <rect x="5" y="5" width="25" height="25" fill="#000" />
+                  <rect x="10" y="10" width="15" height="15" fill="#fff" />
+                  <rect x="13" y="13" width="9" height="9" fill="#000" />
+
+                  <rect x="70" y="5" width="25" height="25" fill="#000" />
+                  <rect x="75" y="10" width="15" height="15" fill="#fff" />
+                  <rect x="78" y="13" width="9" height="9" fill="#000" />
+
+                  <rect x="5" y="70" width="25" height="25" fill="#000" />
+                  <rect x="10" y="75" width="15" height="15" fill="#fff" />
+                  <rect x="13" y="78" width="9" height="9" fill="#000" />
+
+                  <rect x="35" y="10" width="10" height="5" fill="#000" />
+                  <rect x="50" y="5" width="5" height="15" fill="#000" />
+                  <rect x="40" y="25" width="15" height="5" fill="#000" />
+                  
+                  <rect x="5" y="40" width="5" height="20" fill="#000" />
+                  <rect x="20" y="50" width="10" height="10" fill="#000" />
+                  
+                  <rect x="75" y="40" width="15" height="5" fill="#000" />
+                  <rect x="70" y="55" width="10" height="10" fill="#000" />
+                  <rect x="85" y="70" width="10" height="10" fill="#000" />
+                  
+                  <rect x="40" y="45" width="20" height="20" fill="#000" />
+                  <rect x="45" y="50" width="10" height="10" fill="#fff" />
+                  
+                  <rect x="35" y="80" width="25" height="5" fill="#000" />
+                  <rect x="45" y="85" width="5" height="10" fill="#000" />
+                </svg>
+              </div>
+              <div class="ticket-details" id="success-ticket-details">
+                <!-- Dynamically populated by app.js -->
+              </div>
+            </div>
+
+            <div class="action-buttons" style="width: 100%; max-width: 450px;">
+              <button class="btn btn-secondary" onclick="window.print()">Imprimir Ticket QR</button>
+              <button class="btn btn-primary" onclick="resetScan()">Escanear Nuevo Documento</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 3: HISTORY -->
+      <section id="tab-content-history" class="tab-content" style="display: none;">
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <h2 id="history-panel-title">Historial Completo de Guías Electrónicas</h2>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <input type="text" class="form-input" style="flex-grow: 1; padding: 0.75rem 1rem;" placeholder="Buscar por N° Guía, RUC o Destinatario...">
+            <button class="btn btn-primary" style="flex-grow: 0; padding: 0 1.5rem;">Filtrar</button>
+          </div>
+
+          <div class="items-table-wrapper">
+            <table class="items-table" style="font-size: 0.85rem;">
+              <thead id="history-table-head">
+                <!-- Injected dynamically based on role -->
+              </thead>
+              <tbody id="history-table-body">
+                <!-- Injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: INTEGRATIONS -->
+      <section id="tab-content-integrations" class="tab-content" style="display: none;">
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <h2 id="integrations-panel-title">Ecosistema de Integraciones y APIs</h2>
+            </div>
+          </div>
+          
+          <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-muted); display: flex; flex-direction: column; gap: 1.5rem;">
+            <p id="integrations-panel-intro">
+              Para que la plataforma funcione en modalidad SaaS, expone e integra múltiples capas de APIs que satisfacen los requerimientos específicos de ambos tipos de cliente:
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;" id="integrations-cards-grid">
+              <!-- Filled dynamically by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

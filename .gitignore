@@ -1,0 +1,21 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environment variables
+.env
+.env.local
+.env.development
+.env.staging
+.env.production
+
+# SQLite database file
+database.db
+database.db-journal
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
