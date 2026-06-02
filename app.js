@@ -195,8 +195,11 @@ async function resizeImage(file, maxWidth = 1200, maxHeight = 1200) {
 
 // FILE PROCESSING FLOW (Real backend extraction or Simulated demo)
 async function handleFileUpload(file) {
-  if (!file.type.startsWith('image/')) {
-    alert("📸 Por favor, selecciona un archivo de imagen válido (JPG, JPEG o PNG).");
+  const isImage = file.type.startsWith('image/');
+  const isPDF = file.type === 'application/pdf';
+
+  if (!isImage && !isPDF) {
+    alert("📸 Documento no soportado. Por favor, selecciona una imagen (JPG/PNG) o un archivo PDF.");
     return;
   }
 
@@ -232,17 +235,20 @@ async function handleFileUpload(file) {
     return;
   }
 
-  scanLabel.textContent = '⚡ Optimizando imagen para transmisión ultra rápida...';
-
   let optimizedFile = file;
-  try {
-    optimizedFile = await resizeImage(file, 1200, 1200);
-    console.log(`📸 Compresión local: ${(file.size / 1024).toFixed(1)} KB → ${(optimizedFile.size / 1024).toFixed(1)} KB`);
-  } catch (err) {
-    console.warn("Fallo compresión local, subiendo archivo original", err);
+  if (isImage) {
+    scanLabel.textContent = '⚡ Optimizando imagen para transmisión ultra rápida...';
+    try {
+      optimizedFile = await resizeImage(file, 1200, 1200);
+      console.log(`📸 Compresión local: ${(file.size / 1024).toFixed(1)} KB → ${(optimizedFile.size / 1024).toFixed(1)} KB`);
+    } catch (err) {
+      console.warn("Fallo compresión local, subiendo archivo original", err);
+    }
+  } else {
+    scanLabel.textContent = '📄 Analizando estructura digital del archivo PDF...';
   }
 
-  scanLabel.textContent = '🚀 Subiendo imagen optimizada al servidor...';
+  scanLabel.textContent = isImage ? '🚀 Subiendo imagen optimizada al servidor...' : '🚀 Subiendo archivo PDF al servidor...';
 
   // Make REST Upload call to local Python server
   const formData = new FormData();

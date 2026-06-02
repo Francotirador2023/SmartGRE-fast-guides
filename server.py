@@ -156,13 +156,20 @@ async def scan_document(file: UploadFile = File(...)):
             detail="🔑 API Key requerida en el servidor. Por favor configura la variable API_KEY en server.py"
         )
 
-    # Validar que sea una imagen
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="El archivo subido debe ser una imagen (JPG/PNG).")
+    # Validar tipo de archivo (Imagen o PDF)
+    mime_type = file.content_type
+    is_image = mime_type.startswith("image/")
+    is_pdf = mime_type == "application/pdf"
+
+    if not (is_image or is_pdf):
+        raise HTTPException(
+            status_code=400, 
+            detail="El archivo subido debe ser una imagen (JPG/PNG) o un documento PDF."
+        )
 
     try:
-        # Cargar imagen en memoria usando Pillow
-        img = Image.open(file.file)
+        # Leer el contenido en memoria
+        file_bytes = await file.read()
         
         # Configurar Google Generative AI
         genai.configure(api_key=api_key_resolved)
@@ -180,11 +187,21 @@ async def scan_document(file: UploadFile = File(...)):
         except Exception:
             pass
 
-        print(f"🤖 Procesando con modelo: {model_name}")
+        # Preparar el contenido para Gemini
+        if is_image:
+            from io import BytesIO
+            media_part = Image.open(BytesIO(file_bytes))
+        else:
+            media_part = {
+                "mime_type": "application/pdf",
+                "data": file_bytes
+            }
+
+        print(f"🤖 Procesando {file.filename} con modelo: {model_name}")
         model = genai.GenerativeModel(model_name)
         
         prompt = """
-        Analiza detalladamente esta imagen de documento comercial o logístico (puede ser una Guía de Remisión Remitente, Guía de Transportista, Factura o una Orden de Compra).
+        Analiza detalladamente esta imagen o archivo PDF de documento comercial o logístico (puede ser una Guía de Remisión Remitente, Guía de Transportista, Factura o una Orden de Compra).
         Extrae toda la información tributaria y de carga estructurándola exactamente en el siguiente formato JSON. Si no encuentras algún campo en el documento, colócalo como null o vacío.
         
         Devuelve ÚNICAMENTE el código JSON limpio, sin comentarios adicionales fuera del bloque de código.
@@ -224,7 +241,7 @@ async def scan_document(file: UploadFile = File(...)):
         }
         """
 
-        response = model.generate_content([prompt, img])
+        response = model.generate_content([prompt, media_part])
         raw_text = response.text.strip()
         
         # Limpiar tags de markdown ```json si estuvieran
