@@ -34,10 +34,136 @@
   
   --sidebar-width: 260px;
   --header-height: 70px;
-  
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
   --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+/* ==============================================================================
+   LIGHT THEME VARIABLES (Slate/Blue Harmonious Palette)
+   ============================================================================== */
+body.light-theme {
+  --bg-main: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --border-color: rgba(15, 23, 42, 0.08);
+  --border-color-active: rgba(59, 130, 246, 0.4);
+  
+  --primary: #2563eb;
+  --primary-glow: rgba(37, 99, 235, 0.15);
+  --secondary: #7c3aed;
+  --secondary-glow: rgba(124, 58, 237, 0.15);
+  
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dark: #94a3b8;
+  
+  --shadow-premium: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.08);
+}
+
+/* ==============================================================================
+   SPECIFIC LIGHT THEME COMPONENT OVERRIDES
+   ============================================================================== */
+body.light-theme .sidebar {
+  background: #ffffff;
+  border-right: 1px solid var(--border-color);
+}
+body.light-theme .logo-text {
+  background: linear-gradient(to right, #0f172a, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.light-theme .nav-link:hover {
+  background: rgba(15, 23, 42, 0.03);
+}
+body.light-theme .nav-item.active .nav-link {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.15);
+}
+body.light-theme .metric-value,
+body.light-theme .sample-btn-name,
+body.light-theme .panel-title h2,
+body.light-theme .upload-title,
+body.light-theme .switcher-select-btn {
+  color: #0f172a;
+}
+body.light-theme .form-input {
+  background: rgba(15, 23, 42, 0.02);
+  color: #0f172a;
+}
+body.light-theme .form-input:focus {
+  background: rgba(37, 99, 235, 0.02);
+}
+body.light-theme .sample-button {
+  background: rgba(15, 23, 42, 0.02);
+}
+body.light-theme .sample-button:hover {
+  background: rgba(15, 23, 42, 0.05);
+}
+body.light-theme .upload-container {
+  border-color: rgba(15, 23, 42, 0.15);
+  background: rgba(15, 23, 42, 0.01);
+}
+body.light-theme .upload-container:hover,
+body.light-theme .upload-container.dragover {
+  background: rgba(37, 99, 235, 0.02);
+  border-color: var(--primary);
+}
+body.light-theme .document-viewer {
+  background: rgba(15, 23, 42, 0.02);
+}
+body.light-theme .items-table th {
+  background: rgba(15, 23, 42, 0.02);
+}
+body.light-theme .activity-item {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+}
+body.light-theme .activity-item:hover {
+  background: rgba(15, 23, 42, 0.01);
+}
+body.light-theme *::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.15);
+}
+body.light-theme *::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.3);
+}
+body.light-theme .bg-glow-1 {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+}
+body.light-theme .bg-glow-2 {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+}
+
+/* ==============================================================================
+   PREMIUM THEME TOGGLE BUTTON STYLING
+   ============================================================================== */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-color-active);
+  color: var(--text-main);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+}
+body.light-theme .theme-toggle-btn {
+  background: rgba(15, 23, 42, 0.03);
+}
+body.light-theme .theme-toggle-btn:hover {
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--text-main);
 }
 
 * {

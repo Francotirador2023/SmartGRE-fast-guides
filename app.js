@@ -1481,6 +1481,40 @@ function showSuccessScreen(greNum, emisorRuc, emisorName, destName, driver, plat
   document.getElementById('success-screen').style.display = 'flex';
 }
 
+// THEME SWITCHER SYSTEM (Light/Dark Mode with local storage persistence)
+function initTheme() {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
+
+  const sunIcon = themeToggle.querySelector('.sun-icon');
+  const moonIcon = themeToggle.querySelector('.moon-icon');
+
+  // Load saved theme or default to dark
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    if (sunIcon) sunIcon.style.display = 'none';
+    if (moonIcon) moonIcon.style.display = 'block';
+  } else {
+    document.body.classList.remove('light-theme');
+    if (sunIcon) sunIcon.style.display = 'block';
+    if (moonIcon) moonIcon.style.display = 'none';
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-theme');
+    if (isLight) {
+      localStorage.setItem('theme', 'light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      localStorage.setItem('theme', 'dark');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+  });
+}
+
 // ON WINDOW LOAD INITIALIZER
 window.onload = function() {
   const style = document.createElement('style');
@@ -1495,4 +1529,7 @@ window.onload = function() {
 
   // Initialize and check local backend
   checkServerStatus();
+  
+  // Initialize light/dark theme switcher
+  initTheme();
 };
