@@ -679,6 +679,170 @@ async function renderDashboardData() {
   }
 }
 
+// ==============================================================================
+// BASE DE DATOS DE FLOTA INTERNA (SOPORTE PARA AUTOCOMPLETADO B2B SAAS)
+// ==============================================================================
+const FLEET_DRIVERS = [
+  { name: 'Carlos Mendoza Vasquez', license: 'Q-4829103', status: 'Activo' },
+  { name: 'Jorge Vasquez Torres', license: 'A-2948102', status: 'Activo' },
+  { name: 'Luis Alarcon Quispe', license: 'B-1049281', status: 'Activo' },
+  { name: 'Mariano Ramos Del Solar', license: 'C-2938104', status: 'Activo' }
+];
+
+const FLEET_VEHICLES = [
+  { plate: 'F4B-920', desc: 'Tracto Volvo FMX', status: 'Operativo' },
+  { plate: 'C2I-841', desc: 'Camión Scania R450', status: 'Operativo' },
+  { plate: 'T8O-104', desc: 'Furgón Hino 300', status: 'Operativo' },
+  { plate: 'A9U-938', desc: 'Tracto Mercedes Axor', status: 'Operativo' }
+];
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Configura el sistema de autocompletado para conductor y placa tracto
+function setupFleetAutocomplete() {
+  const driverInput = document.getElementById('form-carrier-driver');
+  const driverDropdown = document.getElementById('form-driver-dropdown');
+  const licenseInput = document.getElementById('form-carrier-license');
+  
+  const plateInput = document.getElementById('form-carrier-plate');
+  const plateDropdown = document.getElementById('form-plate-dropdown');
+
+  if (!driverInput || !driverDropdown || !plateInput || !plateDropdown) return;
+
+  // Hacer la licencia de solo lectura para evitar digitación fallida SUNAT
+  if (licenseInput) {
+    licenseInput.readOnly = true;
+    licenseInput.style.opacity = '0.75';
+    licenseInput.style.cursor = 'not-allowed';
+    licenseInput.setAttribute('title', 'La licencia se auto-completa al elegir el chofer para evitar errores tributarios.');
+  }
+
+  // --- AUTOCOMPLETADO DE CONDUCTOR ---
+  function renderDriverOptions(query = '') {
+    driverDropdown.innerHTML = '';
+    const filtered = FLEET_DRIVERS.filter(d => 
+      d.name.toLowerCase().includes(query.toLowerCase()) || 
+      d.license.toLowerCase().includes(query.toLowerCase())
+    );
+
+    if (filtered.length === 0) {
+      driverDropdown.innerHTML = `<div style="padding: 0.75rem; font-size: 0.75rem; color: var(--text-dark); text-align: center;">Sin coincidencias</div>`;
+      return;
+    }
+
+    filtered.forEach(driver => {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      
+      let highlightedName = driver.name;
+      if (query.trim() !== '') {
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        highlightedName = driver.name.replace(regex, '<span class="highlight-match">$1</span>');
+      }
+
+      div.innerHTML = `
+        <span style="font-weight: 600;">${highlightedName}</span>
+        <span class="item-sub">Licencia: ${driver.license} • <span style="color: var(--success);">${driver.status}</span></span>
+      `;
+
+      div.addEventListener('click', () => {
+        driverInput.value = driver.name;
+        if (licenseInput) {
+          licenseInput.value = driver.license;
+        }
+        
+        // Actualizar previsualización del ticket en tiempo real
+        const docDriverPreview = document.getElementById('doc-driver-preview');
+        if (docDriverPreview) {
+          docDriverPreview.textContent = driver.name;
+        }
+
+        driverDropdown.style.display = 'none';
+      });
+
+      driverDropdown.appendChild(div);
+    });
+  }
+
+  driverInput.addEventListener('focus', () => {
+    plateDropdown.style.display = 'none'; // Cerrar el otro por si acaso
+    renderDriverOptions(driverInput.value);
+    driverDropdown.style.display = 'block';
+  });
+
+  driverInput.addEventListener('input', () => {
+    renderDriverOptions(driverInput.value);
+    driverDropdown.style.display = 'block';
+  });
+
+  // --- AUTOCOMPLETADO DE PLACA ---
+  function renderPlateOptions(query = '') {
+    plateDropdown.innerHTML = '';
+    const filtered = FLEET_VEHICLES.filter(v => 
+      v.plate.toLowerCase().includes(query.toLowerCase()) || 
+      v.desc.toLowerCase().includes(query.toLowerCase())
+    );
+
+    if (filtered.length === 0) {
+      plateDropdown.innerHTML = `<div style="padding: 0.75rem; font-size: 0.75rem; color: var(--text-dark); text-align: center;">Sin coincidencias</div>`;
+      return;
+    }
+
+    filtered.forEach(vehicle => {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      
+      let highlightedPlate = vehicle.plate;
+      if (query.trim() !== '') {
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        highlightedPlate = vehicle.plate.replace(regex, '<span class="highlight-match">$1</span>');
+      }
+
+      div.innerHTML = `
+        <span style="font-weight: 600;">${highlightedPlate}</span>
+        <span class="item-sub">${vehicle.desc} • <span style="color: var(--success);">${vehicle.status}</span></span>
+      `;
+
+      div.addEventListener('click', () => {
+        plateInput.value = vehicle.plate;
+        
+        // Actualizar previsualización del ticket en tiempo real
+        const docPlatePreview = document.getElementById('doc-plate-preview');
+        if (docPlatePreview) {
+          docPlatePreview.textContent = vehicle.plate;
+        }
+
+        plateDropdown.style.display = 'none';
+      });
+
+      plateDropdown.appendChild(div);
+    });
+  }
+
+  plateInput.addEventListener('focus', () => {
+    driverDropdown.style.display = 'none'; // Cerrar el otro
+    renderPlateOptions(plateInput.value);
+    plateDropdown.style.display = 'block';
+  });
+
+  plateInput.addEventListener('input', () => {
+    renderPlateOptions(plateInput.value);
+    plateDropdown.style.display = 'block';
+  });
+
+  // Cerrar menús al hacer click fuera del input
+  document.addEventListener('click', (e) => {
+    if (!driverInput.contains(e.target) && !driverDropdown.contains(e.target)) {
+      driverDropdown.style.display = 'none';
+    }
+    if (!plateInput.contains(e.target) && !plateDropdown.contains(e.target)) {
+      plateDropdown.style.display = 'none';
+    }
+  });
+}
+
 // 2. SCANNER FORM RENDERER (remains identical, sets up inputs)
 function renderScannerForm() {
   const container = document.getElementById('extracted-form-container');
@@ -764,7 +928,10 @@ function renderScannerForm() {
       <div class="form-group-row">
         <div class="form-group">
           <label class="form-label">Conductor Asignado</label>
-          <input type="text" class="form-input highlighted" id="form-carrier-driver" placeholder="Ej: Carlos Mendoza">
+          <div class="autocomplete-wrapper">
+            <input type="text" class="form-input highlighted" id="form-carrier-driver" placeholder="Ej: Carlos Mendoza" autocomplete="off">
+            <div class="autocomplete-dropdown" id="form-driver-dropdown"></div>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Licencia Conducir</label>
@@ -775,7 +942,10 @@ function renderScannerForm() {
       <div class="form-group-row">
         <div class="form-group">
           <label class="form-label">Placa Tracto (Vehículo)</label>
-          <input type="text" class="form-input highlighted" id="form-carrier-plate" placeholder="Ej: F4B-920">
+          <div class="autocomplete-wrapper">
+            <input type="text" class="form-input highlighted" id="form-carrier-plate" placeholder="Ej: F4B-920" autocomplete="off">
+            <div class="autocomplete-dropdown" id="form-plate-dropdown"></div>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Peso Bruto Total Declarado (Kg)</label>
@@ -920,6 +1090,9 @@ function renderScannerForm() {
       </div>
     `;
   }
+  
+  // Inicializar autocompletado inteligente de flota
+  setupFleetAutocomplete();
 }
 
 // 3. HISTORY TABLE RENDERER (Persistent SQLITE or Mock)
@@ -1529,6 +1702,9 @@ window.onload = function() {
 
   // Initialize and check local backend
   checkServerStatus();
+  
+  // Set default SaaS role to carrier to initialize scanner form and state
+  setSaaSRole('carrier');
   
   // Initialize light/dark theme switcher
   initTheme();
