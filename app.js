@@ -1,8 +1,8 @@
 // ==============================================================================
 // CONFIGURACIÓN DE TU BACKEND (FASTAPI HÍBRIDO SQLITE/SUPABASE)
 // ==============================================================================
-// URL de tu servidor en Render en producción (Reemplazar con tu URL real)
-const PROD_BACKEND_URL = 'https://smartgre-backend.onrender.com';
+// URL de tu servidor en Render en producción
+const PROD_BACKEND_URL = 'https://smartgre-fast-guides.onrender.com';
 
 // Detección automática del entorno (Local vs Vercel/Render)
 const SERVER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
