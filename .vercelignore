@@ -1,0 +1,10 @@
+server.py
+requirements.txt
+.python-version
+ocr_test.py
+database.db
+__pycache__/
+.env
+.env.example
+.gitignore
+README.md
