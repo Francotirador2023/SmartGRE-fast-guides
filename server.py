@@ -59,19 +59,52 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_PATH = 'database.db'
+# ==============================================================================
+# CONFIGURACIÓN DE CONEXIÓN HÍBRIDA (SQLITE / POSTGRESQL DE SUPABASE)
+# ==============================================================================
+def get_db_connection():
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        try:
+            import psycopg2
+            # psycopg2 acepta URIs de conexión directamente
+            conn = psycopg2.connect(database_url)
+            return conn, True
+        except Exception as e:
+            print(f"⚠️ Error al conectar a PostgreSQL (Supabase): {str(e)}")
+            print("👉 Intentando conectar con SQLite local como respaldo...")
+            
+    import sqlite3
+    conn = sqlite3.connect('database.db')
+    return conn, False
 
-# ==============================================================================
-# INICIALIZACIÓN DE LA BASE DE DATOS SQLITE
-# ==============================================================================
+def execute_query(conn, query, params=()):
+    cursor = conn.cursor()
+    database_url = os.environ.get("DATABASE_URL")
+    
+    # Si es SQLite, cambiamos la sintaxis de placeholders de %s a ?
+    if not database_url:
+        query = query.replace("%s", "?")
+        
+    cursor.execute(query, params)
+    return cursor
+
+def fetch_all_as_dicts(cursor):
+    if not cursor.description:
+        return []
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn, is_postgres = get_db_connection()
     cursor = conn.cursor()
     
+    id_type = "SERIAL PRIMARY KEY" if is_postgres else "INTEGER PRIMARY KEY AUTOINCREMENT"
+    
     # Crear la tabla de guías si no existe
-    cursor.execute('''
+    cursor.execute(f'''
         CREATE TABLE IF NOT EXISTS guides (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id {id_type},
             date_created TEXT,
             doc_type TEXT,
             sender_ruc TEXT,
@@ -93,20 +126,25 @@ def init_db():
             gre_number TEXT
         )
     ''')
+    conn.commit()
     
     # Insertar un par de registros semilla de ejemplo en el historial si la tabla está vacía
     cursor.execute('SELECT COUNT(*) FROM guides')
-    if cursor.fetchone()[0] == 0:
-        cursor.execute('''
+    count = cursor.fetchone()[0]
+    
+    if count == 0:
+        placeholder = "%s" if is_postgres else "?"
+        query = f'''
             INSERT INTO guides (
                 date_created, doc_type, sender_ruc, sender_name, doc_number, doc_date,
                 start_point, end_point, recipient_ruc, recipient_name,
                 carrier_name, carrier_ruc, driver_name, driver_license, vehicle_plate,
                 weight_kg, items_json, status, gre_number
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                {", ".join([placeholder] * 19)}
             )
-        ''', (
+        '''
+        cursor.execute(query, (
             datetime.now().strftime("%d/%m/%Y %H:%M"),
             "carrier", "20549281042", "LABORATORIO HOFARM S.A.C.", "GRR-0049281", "30/05/2026",
             "Jr. Los Cedros 452 - Lince", "Av. Industrial 1050 - Ate", "20104829103", "DIFARMA S.A.",
@@ -115,10 +153,15 @@ def init_db():
             "EMITIDO", "GRT-2026-004822"
         ))
         conn.commit()
+        print(f"🌱 Datos semilla inicializados en la base de datos ({'PostgreSQL' if is_postgres else 'SQLite'}).")
+    
     conn.close()
 
 # Inicializar DB al arrancar el script
-init_db()
+try:
+    init_db()
+except Exception as e:
+    print(f"⚠️ Error al inicializar la base de datos: {str(e)}")
 
 # Modelos de validación Pydantic
 class EmitRequest(BaseModel):
@@ -265,12 +308,11 @@ async def scan_document(file: UploadFile = File(...)):
             )
         raise HTTPException(status_code=500, detail=f"Error al procesar la imagen con Gemini: {err_msg}")
 
-# 2. EMIT ENDPOINT: Guarda el documento final emitido en la base de datos SQLite
+# 2. EMIT ENDPOINT: Guarda el documento final emitido en la base de datos (SQLite o PostgreSQL)
 @app.post("/api/emit")
 def emit_document(req: EmitRequest):
     try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
+        conn, is_postgres = get_db_connection()
         
         # Generar número de guía oficial ficticio
         import random
@@ -279,17 +321,19 @@ def emit_document(req: EmitRequest):
         
         date_now = datetime.now().strftime("%d/%m/%Y %H:%M")
         
-        # Insertar registro
-        cursor.execute('''
+        # Insertar registro usando execute_query para compatibilidad de placeholders
+        placeholder = "%s" if is_postgres else "?"
+        query = f'''
             INSERT INTO guides (
                 date_created, doc_type, sender_ruc, sender_name, doc_number, doc_date,
                 start_point, end_point, recipient_ruc, recipient_name,
                 carrier_name, carrier_ruc, driver_name, driver_license, vehicle_plate,
                 weight_kg, items_json, status, gre_number
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                {", ".join([placeholder] * 19)}
             )
-        ''', (
+        '''
+        execute_query(conn, query, (
             date_now, req.doc_type, req.sender_ruc, req.sender_name, req.doc_number, req.doc_date,
             req.start_point, req.end_point, req.recipient_ruc, req.recipient_name,
             req.carrier_name, req.carrier_ruc, req.driver_name, req.driver_license, req.vehicle_plate,
@@ -311,17 +355,16 @@ def emit_document(req: EmitRequest):
 @app.get("/api/history")
 def get_history(role: str = "carrier"):
     try:
-        conn = sqlite3.connect(DB_PATH)
-        conn.row_factory = sqlite3.Row  # Retornar dicts
-        cursor = conn.cursor()
+        conn, is_postgres = get_db_connection()
         
-        cursor.execute('''
+        placeholder = "%s" if is_postgres else "?"
+        query = f'''
             SELECT * FROM guides 
-            WHERE doc_type = ? 
+            WHERE doc_type = {placeholder} 
             ORDER BY id DESC
-        ''', (role,))
-        
-        rows = cursor.fetchall()
+        '''
+        cursor = execute_query(conn, query, (role,))
+        rows = fetch_all_as_dicts(cursor)
         conn.close()
         
         history_list = []
@@ -382,12 +425,14 @@ def read_logo_jpg():
 
 # Arrancar el servidor
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "127.0.0.1")
+    
     print("\n" + "=" * 70)
-    print("      SMARTGRE BACKEND - INICIANDO SERVIDOR LOCAL TRIBUTARIO")
+    print("      SMARTGRE BACKEND - INICIANDO SERVIDOR TRIBUTARIO")
     print("=" * 70)
-    print("👉 Inicializando base de datos SQLite 'database.db'...")
-    print("👉 Servidor Web y API corriendo en: http://127.0.0.1:8000")
+    print(f"👉 Servidor Web y API corriendo en: http://{host}:{port}")
     print("👉 Abre esta URL en cualquier navegador para usar la app real sin bloqueos!")
     print("=" * 70 + "\n")
     
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host=host, port=port)
